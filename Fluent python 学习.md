@@ -838,7 +838,68 @@ _mro_属性会自动规定超类函数的使用顺序，谁在前面就先使用
 
 总的来说多重继承没有什么太大的缺点，需要注意的是，当要继承str,dict,list这些超类时，这些由于是用C语言写的，所以一些相应的子类中的功能可能不会覆盖超类中的功能，可以考虑把UserDict,UserString,UserList作为要继承的超类
 
+#### 运算符重载
 
+~运算符代表：-（x+1) 对整数取反
 
+##### Counter用法：返回后面可迭代对象的出现次数的统计的字典
 
+```python
+from collections import Counter
+a = Counter("abcdfsdfa")
 
+```
+
+```python
+def __add__(self, other):
+     pairs = itertools.zip_longest(self, other, fillvalue=0.0) 
+     return Vector(a + b for a, b in pairs) 
+```
+
+itertools.zip_longest在这里的作用：把self和other展开成可迭代对象，并把比较短的序列中的值用0代替。
+
+常见的运算符：
+
+![image-20200729084723874](https://i.loli.net/2020/07/29/tosORTdQgxKYnIu.png)
+
+![image-20200729084848040](https://i.loli.net/2020/07/29/4NloLHAReJGcTqy.png)
+
+#### 可迭代的对象，迭代器与生成器
+
+检查序列a是不是迭代器的最好方法：
+
+```python
+isinstance(a,abc.Iterator)
+```
+
+可迭代的对象与迭代器的区别：
+
+可迭代对象只需实现
+
+```python
+__iter__
+```
+
+功能,而迭代器除了该功能以外，还要实现next功能
+
+生成器函数和普通函数的区别：生成器函数有yield
+
+#### 上下文管理器和else
+
+for + else: 当for 循环被完整执行，即没有遇到break时，执行else语句
+
+try + else:当try 中没有遇到异常值是，执行else语句
+
+else 在if 和 循环中不同的含义：在if中 表示如果不是之前的情况时执行，循环中是循环都被执行后执行esle语句
+
+with 和上下文管理器：实现了上下文管理器中的 enter 和 exit内置功能
+
+以读写文件为例：
+
+```python
+with open('a.txt') as fp:
+     src = fp.read(60)
+fp
+```
+
+在with使用结束后，可以 调用fp ，但不可以对fp再执行I/O操作 。
