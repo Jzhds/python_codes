@@ -211,6 +211,7 @@ list(map(factorial,range(11)))
 [factorial(n) for n in range(11)]
 list(map(factorial,filter(lamda x:x%2,range(6))))
 [factorial(n) for n in range(6) if n%2] #注意要先给出范围，然后再加限定条件，而不是先写限定条件
+[factorial(n)  if n%2 else 0 for n in range(6)]
 ```
 
 all(iterable)
@@ -903,3 +904,11 @@ fp
 ```
 
 在with使用结束后，可以 调用fp ，但不可以对fp再执行I/O操作 。
+
+#### isin
+
+```python
+Data = Data[Data['Stock'].isin(Stocklist['证券代码'])]
+```
+
+- 类中的\__name__ 可以返回类的名称

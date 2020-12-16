@@ -1,4 +1,4 @@
-### Pandas
+### lPandas
 
 ```python
 import pandas as pd
@@ -17,7 +17,7 @@ df['A':'D'] #显示从A行到D行的数据
 df['A']#则报错，很神奇
 df["Python"]
 df["Python":"Math"] #只显示对应的列名
-df.loc[['A','C']] 
+df.loc[['A','C']]  #注意选择不连续的多行时，一定不要加后面的引号
 df.iloc[0]
 
 
@@ -54,6 +54,9 @@ for col in df.columns:
 sefre = pd.Series(fre,index = df.columns)
 df.dropna() #有空值的行直接删除
 
+long_data.index[long_data.T.isnull().all()] #搞出来全部值都是空值的行标签
+rebased = px.apply(lambda x: x.loc[x.first_valid_index()]) #找到每列第一个非空的行的情况
+
 ```
 
 #### 多层索引
@@ -68,6 +71,8 @@ df = pd.DataFrame(np.random.randint(0,150,size = (6,3)),columns=['Python','En','
 df
 # 先获取列后获取行
 df3['Python']['张三']['期中']
+# 获取某个index的信息
+set(df_processed.index.get_level_values(0))
 ```
 
 #### 多层索引计算
@@ -110,7 +115,7 @@ data = df.groupby(by = ['Hand'])['IQ','weight']
 data.agg(['max','mean']).round(1) #agg的作用应该是对每一个都执行后面的函数，需要注意要加上引号，应该相当于apply的功能感觉
 data.agg({'IQ':'max','weight':'mean'}).round(1)
 pop2.drop(labels = 'abbreviation',axis = 1,inplace=True)
-
+df.groupby('group')['value'].rank(ascending=False) #按照某一列进行聚合返回按照其他列进行排序的rank，这里代表的是降序
 ```
 
 #### 排序与确定索引
@@ -124,3 +129,134 @@ df.sort_values(by="",ascending = False)#降序排列
 #### Dataframe
 
 #需要注意的是，list转化成dataframe的时候，和dict转化成dataframe不同，并不是有几个列表对应几列，而是对应的行数，在进行index和columns命名时，需要先转置
+
+#### 添加新列
+
+data['a'] = ''
+
+#### 查看某一列第一个不是空值的对应列索引：
+
+```python
+for i in data.columns:
+    print("{}:{}".format(i,data.index[data.loc[:,i].notnull()][0].strftime("%Y-%m-%d")))
+```
+
+#### 建立有列名的空数据框
+
+```python
+pd.DataFrame(columns = [""])
+df.loc['a',:] = list1 # 添加新行
+```
+
+#### 查看dataframe中某列满足某个条件的index的情况
+
+```python
+player_data[player_data['age_start'] == min_enter_age].index
+```
+
+#### 去除重复列
+
+```python
+SP_500_data = SP_500_data.T.drop_duplicates().T
+```
+
+#### 按照某一列进行排序
+
+```python
+sort_values('val',ascending=False)
+```
+
+#### 两个数据框选择大的值进行填入，并用其中一个数据框填补缺失值
+
+```python
+df.where(df > df1, df1).fillna(df)
+```
+
+#### 返回按行的排序值
+
+```python
+df.rank(1, ascending=False, method='first')
+```
+
+#### 查看数据框各列的情况
+
+```python
+df2.dtypes
+df.describe()
+```
+
+#### 选择
+
+```python
+df2[df2['E'].isin(['two', 'four'])]
+pd.isna(df1) #看哪些位置里面是空值
+```
+
+#### apply
+
+```python
+df.apply(np.cumsum) #累加
+df.apply(lambda x: x.max() - x.min())
+```
+
+
+
+temp_dataframe[y_data.isnull]  = np.nan
+
+#### pivot table:转成分类的数据框
+
+```python
+pd.pivot_table(df, values='D', index=['A', 'B'], columns=['C'])
+```
+
+#### 转化成类别变量
+
+```python
+df["grade"] = df["raw_grade"].astype("category")
+df["grade"].cat.categories = ["very good", "good", "very bad"]
+```
+
+```python
+ts = ts.cumsum() #按列累加
+```
+
+#### 规定数据的类型
+
+```python
+s = pd.Series(['a', 2, np.nan], dtype="string")
+#或者在series 或者 dataframe 创建后：
+s = pd.Series(['a', 2, np.nan]).astype("string")
+```
+
+#### 对数据框执行字符串的一些操作
+
+```python
+s.str.lower() #需要添加str属性，对str属性进行操作
+s2.str.split('_', expand=True) # 按照分隔符进行分割，并返回dataframe
+```
+
+```python
+pat = r'[a-z]+'
+
+In [55]: def repl(m):
+   ....:     return m.group(0)[::-1] #group返回正则表达式匹配的值
+   ....: 
+
+In [56]: pd.Series(['foo 123', 'bar baz', np.nan],
+   ....:           dtype="string").str.replace(pat, repl) #代替
+```
+
+https://pandas.pydata.org/docs/user_guide/text.html # 看到replace
+
+#### shift()
+
+shift() 取前面的数据，加上符号表示取后面的数据。
+
+- 选择特定的列读入：usecols = [1,2]
+- 重新设定参数：data.set_index("jk",inplace=True)
+- index_col 不能取太大，一般取0，如果需要从某个特定区域开始读入的话，可以用usecols的方法，然后再重新设置Index
+
+```
+
+```
+
